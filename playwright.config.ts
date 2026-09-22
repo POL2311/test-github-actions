@@ -1,6 +1,7 @@
 declare const process: any;
 import dotenv from 'dotenv';
 import { defineConfig, devices } from '@playwright/test';
+import { permission } from 'process';
 require('dotenv').config({
   path: `.env.${process.env.NODE_ENV ? process.env.NODE_ENV: 'dev'
   }`
@@ -48,8 +49,19 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      name: "setup",
+      testMatch: /.*\.setup\.ts/,
+    },
+    {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { 
+        ...devices['Desktop Chrome'],
+      contextOptions:{
+        permissions: ["clipboard-read","clipboard-write"],
+        storageState: "playwright/.auth/user.json"
+      },
+    },
+    dependencies:["setup"]
     },
   ],
 });
